@@ -41,7 +41,7 @@ const { data: user } = useAsyncData<User>(() =>
 }
 
 .card {
-  width: 350px;
+  width: 450px;
   border: 1px solid black;
   display: flex;
   justify-content: left;
@@ -49,5 +49,9 @@ const { data: user } = useAsyncData<User>(() =>
   gap: 1em;
   padding: 1em;
   background-color: lightgoldenrodyellow;
+}
+
+img {
+  width: 150px;
 }
 </style>

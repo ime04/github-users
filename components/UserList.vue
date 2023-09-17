@@ -1,8 +1,7 @@
 <template>
  <section class="wrapper">
     <div class="search">
-        <input v-model="searchText" type="text" placeholder="Search organization"/>
-        <input type="button" value="Search" @click="search"/>
+      <input type="search" v-model="searchText" @input="handleSearchInput" />
     </div>
     <div class="flex align-items-center justify-content-between">
       <h1>Users</h1>
@@ -11,14 +10,7 @@
     <ul class="user-list">
       <li class="user-item" v-for="user in list" :key="user.id">
         <NuxtLink :to="`/user/${user.login}`">
-          <article class="grid user-container card">
-            <div class="image">
-              <img :src="user.avatar_url" alt="" loading="lazy" />
-            </div>
-            <div class="user-container__content">
-              <h2>{{ user.login }}</h2>
-            </div>
-          </article>
+          <UserItem :user="user"/>
         </NuxtLink>
       </li>
     </ul>
@@ -26,18 +18,29 @@
 
 </template>
 <script setup lang="ts">
-import { userService } from '../services/users'
-const list = await userService.get()
-const totalUsers = computed(() => list.length);
+import { User } from '~/types'
+import {debounce} from 'lodash';
 
-const searchText = ref('')
+const props = defineProps<{
+  users: User[]
+}>()
 
-const search = async () => {
-  if (searchText.value.length) {
-    const list = await userService.get(searchText.value);
-    const totalUsers = computed(() => list.length);
-  }
-}
+const totalUsers = computed(() => {
+  return list.value.length;
+})
+
+const userStore = useUserStore();
+const searchTerm = computed(() => userStore.searchTerm);
+const searchText = ref(searchTerm.value);
+
+const list = computed(() => userStore.userList[searchText.value] ?? props.users);
+const debouncedSearch = debounce(value => {
+  userStore.fetchUsers(value);
+  console.log(userStore.userList);
+}, 200);
+const handleSearchInput = () => {
+  debouncedSearch(searchText.value);
+};
 
 </script>
 
@@ -62,20 +65,4 @@ const search = async () => {
   padding: 0 1em;
 }
 
-.user-item {
-  background-color: lightgoldenrodyellow;
-  border: 1px solid black;
-}
-
-.image {
-  display: flex;
-  height: 200px;
-  flex-direction: column;
-  justify-content: center;
-  img {
-    width: 200px;
-    aspect-ratio: 1/1;
-    object-fit: cover;
-  }
-}
 </style>
