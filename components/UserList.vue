@@ -1,11 +1,12 @@
 <template>
  <section class="wrapper">
     <div class="search">
-      <input type="search" v-model="searchText" @input="handleSearchInput" />
+      <input type="search" v-model="searchText"/>
+      <input type="button" value="Search" @click="handleSearchInput"/>
     </div>
     <div class="flex align-items-center justify-content-between">
       <h1>Users</h1>
-      total: {{ totalUsers }}
+      total: {{ countUsers }}
     </div>
     <ul class="user-list">
       <li class="user-item" v-for="user in list" :key="user.id">
@@ -18,28 +19,21 @@
 
 </template>
 <script setup lang="ts">
-import { User } from '~/types'
-import {debounce} from 'lodash';
 
-const props = defineProps<{
-  users: User[]
-}>()
+const {organization, setOrganizationName, fetchUsers} = useUserStore();
+const searchText = ref(organization.name);
 
-const totalUsers = computed(() => {
-  return list.value.length;
-})
+const response = await fetchUsers(searchText.value);
+const list = ref(response);
+const countUsers = computed(() => list.value.length);
 
-const userStore = useUserStore();
-const searchTerm = computed(() => userStore.searchTerm);
-const searchText = ref(searchTerm.value);
+const doSearch = async () => {
+  setOrganizationName(searchText.value);
+  list.value = await fetchUsers(searchText.value);
+};
 
-const list = computed(() => userStore.userList[searchText.value] ?? props.users);
-const debouncedSearch = debounce(value => {
-  userStore.fetchUsers(value);
-  console.log(userStore.userList);
-}, 200);
 const handleSearchInput = () => {
-  debouncedSearch(searchText.value);
+  doSearch();
 };
 
 </script>

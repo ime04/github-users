@@ -1,11 +1,11 @@
 import { User } from "~/types"
 export const userService = {
-    async get(organization: string = 'lemoncode') {
+    async get(organization: string) {
         const users = await fetch(
             `https://api.github.com/orgs/${organization}/members`,
             {
                 headers: {
-                Authorization: "Bearer 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"
+                Authorization: "Bearer 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"
               }
             }
             ).then((r) =>

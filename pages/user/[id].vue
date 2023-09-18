@@ -10,6 +10,9 @@
           <p class="flex">
             {{user.bio}}
           </p>
+          <p class="flex">
+            {{organization.name}}
+          </p>
         </div>
       </div>
     </div>
@@ -21,6 +24,7 @@ import { User } from '../../types'
 
 const route = useRoute()
 const id = route.params.id as string
+const {organization} = useUserStore();
 
 const { data: user } = useAsyncData<User>(() =>
   userService.getUserByID(id)

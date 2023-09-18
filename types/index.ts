@@ -4,7 +4,3 @@ export interface User {
     avatar_url: string
     bio: string
 }
-
-export interface UserOrganizations {
-    [key: string] : User[]
-}
